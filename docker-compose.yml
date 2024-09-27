@@ -1,0 +1,33 @@
+name: finance-docker-project
+
+services:
+  app:
+    image: finance-docker-image
+    container_name: finance-docker-container
+    ports:
+      - "8008:8000"
+    volumes:
+      - .:/app
+
+
+
+# for creating postgres database in docker container
+
+# name: finance-postgresdb-project
+# version: '3'
+
+# services:
+#   postgres:
+#     image: postgres
+#     container_name: finance-postgres-container
+#     ports:
+#       - "5433:5432"
+#     environment:
+#       POSTGRES_DB: financedb
+#       POSTGRES_USER: rajon
+#       POSTGRES_PASSWORD: finance$psdb
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data  # Named volume for PostgreSQL data
+
+# volumes:
+#   postgres_data:

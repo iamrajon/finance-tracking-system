@@ -1,0 +1,43 @@
+{% load static %}
+{% load static tailwind_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{% endblock title %}</title>
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+
+        <!--tailwind-->
+        {% tailwind_css %}
+
+        <!--daisyui cdn-->
+        {% comment %} <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" /> {% endcomment %}
+
+        <!--htmx cdn-->
+        {% comment %} <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script> {% endcomment %}
+        <script src="{% static 'js/htmx.min.js' %}"></script>
+
+        <!--alpinejs and hyperscript-->
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+        <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+
+        <!--plotlyjs-->
+        <script src="https://cdn.plot.ly/plotly-2.34.0.min.js" charset="utf-8"></script>
+
+
+    </head>
+    <body  class="font-sans" data-theme="light">
+
+        {% include 'includes/messages.html' %}
+
+        <div class="w-full h-full block font-poppins">
+            {% block layout %}
+
+            {% endblock layout %}
+        </div>
+
+        {% block scriptjs %}{% endblock scriptjs %}
+    </body>
+</html>

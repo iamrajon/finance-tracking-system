@@ -1,0 +1,46 @@
+{% load widget_tweaks %}
+{% load static %}
+
+<div class="px-2 mb-2 flex items-center justify-between gap-2">
+    <div class="form-control text-black w-1/2">
+        {{ form.transaction_type|add_label_class:"label text-black text-sm" }}
+        {% render_field form.transaction_type class="select bg-gray-100 text-gray-900 text-xs" %}
+    </div>
+    <div class="form-control text-black w-1/2">
+        {{ form.date|add_label_class:"label text-black text-sm" }}
+        {% render_field form.date class="input bg-gray-100 text-gray-900 text-xs" %}
+    </div>
+</div>
+<!--amount-->
+<div class="mb-2 px-2 form-control text-black">
+    {{ form.amount|add_label_class:"label text-black text-sm" }}
+    {% render_field form.amount class="input bg-gray-100 text-gray-900" %}
+    {% for error in form.amount.errors %}
+        <p class="text-red-400 text-xs mt-1">{{ error }}</p>
+    {% endfor %}
+</div>
+<!--category-->
+<div class="mb-2 px-2 form-control text-black">
+    {{ form.category|add_label_class:"label text-black text-sm" }}
+{% comment %} {% render_field form.category class="text-green-500 border-gray-300 rounded focus:ring-green-500 text-xs" %} {% endcomment %}
+    <div class="flex flex-wrap space-x-6 gap-4">
+        {% for choice in form.category.field.choices %}
+            <label class="inline-flex items-center">
+                <input type="radio" name="{{ form.category.name }}" value="{{ choice.0 }}"
+                    class="text-green-500 border-gray-300 focus:ring-green-500 text-xs"
+                    {% if form.category.value == choice.0 %} checked {% endif %}>
+                <span class="ml-2 text-xs">{{ choice.1 }}</span>
+            </label>
+        {% endfor %}
+    </div>
+</div>
+<!--image-->
+<div class="mb-2 mt-2 px-2 form-control text-black">
+    {{ form.image|add_label_class:"label text-black text-sm" }}
+    {% render_field form.image class="file-input file-input-success bg-gray-100 text-gray-900 border-gray-300 rounded focus:ring-green-500 text-xs" %}
+</div>
+<!--details-->
+<div class="mb-2 px-2 form-control text-black">
+    {{ form.details|add_label_class:"label text-black text-sm" }}
+    {% render_field form.details class="textarea bg-gray-100 text-gray-900 border-gray-300 rounded focus:ring-green-500 text-xs" rows="4" %}
+</div>

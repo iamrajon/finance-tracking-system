@@ -1,0 +1,43 @@
+{% extends "layouts/empty_layout.html" %}
+
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %} import -Transaction | Finac{% endblock title %}
+
+
+{% block content %}
+
+    <div class="grid grid-cols-12 w-full h-screen gap-2 p-4">
+        <div class="col-span-3"></div>
+
+    <!--main content-->
+        <div class="col-span-6" id="transaction-block">
+            <h1 class="mt-4 mb-4 px-2 prose prose-2xl text-black">
+                Import Transaction
+            </h1>
+            <small class="mb-8 text-black text-sm font-poppins">=>select the transaction file in csv format like transaction.csv to load data to database in bulk!</small>
+
+            <form action="{% url 'import-transaction' %}" method="POST" method="POST" enctype="multipart/form-data">
+
+            <!--csrf-->
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <input type="file" name="file" class="file-input max-w-xs file-input-success text-black" accept=".csv" />
+                </div>
+
+            <!--submit and cancel button-->
+                <div class="flex gap-2 mt-2 items-center justify-start">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-800  text-white px-4 py-2 ms-2 mt-2 rounded">Add</button>
+                    <a class="bg-orange-600 hover:bg-orange-800  text-white px-4 py-2 ms-2 mt-2 rounded" href="{{ request.META.HTTP_REFERER }}">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-span-3"></div>
+    </div>
+
+{% endblock content %}

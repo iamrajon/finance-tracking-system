@@ -1,0 +1,81 @@
+{% load humanize %}
+{% load widget_tweaks %}
+
+<div class="flex justify-between items-center mb-2">
+    <h3 class="text-xl font-bold">Dashboard</h3>
+    
+</div>
+
+<div class="grid grid-cols-4 gap-4 mb-8">
+    <div class="bg-green-50 p-6 rounded-lg border-2 border-green-500 shadow-lg">
+        <p class="text-gray-600">Total Balance</p>
+        <h2 class="text-3xl font-semibold text-green-700">132</h2>
+    </div>
+    <!-- Total Income -->
+    <div class="bg-green-50 p-6 rounded-lg border-2 border-green-500 shadow-lg">
+        <p class="text-gray-600">Total Income</p>
+        <h2 class="text-3xl font-semibold text-green-700">{{ total_income|floatformat:2|intcomma }}</h2>
+    </div>
+
+    <!-- Total Expense -->
+    <div class="bg-red-50 p-6 rounded-lg border-2 border-red-500 shadow-lg">
+        <p class="text-gray-600">Total Expense</p>
+        <h2 class="text-3xl font-semibold text-red-700">{{ total_expense|floatformat:2|intcomma }}</h2>
+    </div>
+
+    <!-- Net Income -->
+    <div class="bg-blue-50 p-6 rounded-lg border-2 border-blue-500 shadow-lg">
+        <p class="text-gray-600">Net Income</p>
+        <h2 class="text-3xl font-semibold text-blue-700">{{ net_income|floatformat:2|intcomma }}</h2>
+    </div>
+</div>
+
+<!--div for graphs and filter-->
+<div class="bg-white rounded mb-8 grid grid-cols-12">
+    
+    <!---div for displaying charts-->
+    <div class="col-span-10 me-2" id="graph-container">
+
+        {% comment %} <div>{{ income_expense_linechart|safe }}</div> {% endcomment %}
+
+        <div class="grid grid-cols-2 gap-1">
+            {{ income_expense_linechart|safe }}
+            {{ income_expense_barchart1|safe }}
+        </div>
+
+        <div class="grid grid-cols-2 gap-1">
+            {{ category_income_piechart|safe }}
+            {{ category_expense_piechart|safe }}
+        </div>
+
+        <!--spinner-->
+        <span id="spinner-circle" class="loading loading-spinner loading-lg htmx-indicator"></span>
+    </div>
+
+    <!--div for filtering via date-->
+    <div class="col-span-2 min-h-full">
+        <div class="p-4 bg-white rounded-lg shadow-md">
+            <h3 class="text-xl font-poppins font-semibold text-gray-800 mb-4">Filter Data</h3>
+        
+            <form hx-get="{% url 'home-page' %}"
+                hx-target="#graph-container"
+                hx-swap="innerHTML"
+                id="filterform"
+                hx-indicator="#spinner-circle"
+                class="space-y-4">
+        
+                <div class="form-control mb-4">
+                    {{ filter.form.end_date | add_label_class:"block text-black text-sm font-medium mb-1" }}
+                    {% render_field filter.form.end_date class="input bg-gray-200 text-gray-900 text-sm border border-gray-300 rounded-md p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %}
+                </div>
+        
+                <div class="form-control mb-4">
+                    {{ filter.form.start_date | add_label_class:"block text-black text-sm font-medium mb-1" }}
+                    {% render_field filter.form.start_date class="input bg-gray-200 text-gray-900 text-sm border border-gray-300 rounded-md p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %}
+                </div>
+        
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm font-semibold transition duration-200 ease-in-out">Filter</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+{% extends "layouts/sidebar_layout.html" %}
+
+{% load widget_tweaks %}
+{% load partials %}
+{% load humanize %}
+
+{% block title %} HomePage | DashBoard {% endblock %}
+
+
+{% block content %}
+
+<!-- Main Content -->
+    <div class="col-span-10 px-6 py-4 ml-1/6 min-h-screen p-6 overflow-y-auto bg-white">
+        
+        <div class="partial-content" id="graph-container">
+            {% include "partials/graph-container.html" %}
+        </div>
+
+    </div>
+
+{% endblock content %}
+

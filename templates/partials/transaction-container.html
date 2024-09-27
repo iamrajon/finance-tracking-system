@@ -1,0 +1,173 @@
+
+{% load widget_tweaks %}
+{% load partials %}
+{% load humanize %}
+
+<!---3/4 cols for the table of transactions-->
+
+<div class="col-span-9">
+
+    <!--buttons to add and download transactions-->
+    <div class="flex justify-between items-center mb-2">
+        <div>
+            <div class="flex justify-between items-center mb-2">  <!--imp for create trans-->
+                <h4 class="text-lg font-bold leading-none tracking-tight text-gray-500 flex items-center mb-2 ">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 me-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                    Transactions List
+                </h4>
+            </div>
+        </div>
+
+        <div class="flex justify-start items-center">
+            <a class="cursor-pointer" hx-get="{% url 'export-transaction' %}" hx-include="#filterform">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="green" class="w-8 h-7 mr-2 cursor-pointer ">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+            </a>
+
+            <a class="cursor-pointer" href="{% url 'import-transaction' %}" >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="green" class="w-8 h-7 mr-2 ml-2 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                </svg>
+            </a>
+
+            <a href="{% url 'create-transaction' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="green" class="w-8 h-7 ml-2 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </a>
+            <!--sort by algorithm-->
+            <div class="dropdown dropdown-hover ms-2">
+                <div tabindex="0" role="button" class="m-1 bg-gray-200 px-3 rounded flex items-center justify-start cursor-pointer">
+                    <p class="mr-2">Sort By</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="green" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                    <li>
+                        <a hx-get="{% url 'sort-transaction' %}?sort_by=latest" hx-include="#filterform" hx-target="#transaction-container" hx-swap="innerHTML">
+                            Last Modified
+                        </a>
+                    </li>
+                    <li>
+                        <a hx-get="{% url 'sort-transaction' %}?sort_by=oldest" hx-include="#filterform" hx-target="#transaction-container" hx-swap="innerHTML">
+                            Oldest
+                        </a>
+                    </li>
+                    <li>
+                        <a hx-get="{% url 'sort-transaction' %}?sort_by=high_amount" hx-include="#filterform" hx-target="#transaction-container" hx-swap="innerHTML">
+                            High Amount
+                        </a>
+                    </li>
+                    <li>
+                        <a hx-get="{% url 'sort-transaction' %}?sort_by=low_amount" hx-include="#filterform" hx-target="#transaction-container" hx-swap="innerHTML">
+                            Low Amount
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--displaying data in table-->
+
+    {% if transactions %}
+
+        <table class="table table-zebra table-sm">
+            <thead class="text-black uppercase bg-gray-200">
+                <tr>
+                    <th class="px-5 py-3">Date</th>
+                    <th class="px-5 py-3">Category</th>
+                    <th class="px-5 py-3">Type</th>
+                    <th class="px-5 py-3">Amount</th>
+                    <th class="px-5 py-3">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% partialdef transaction_page inline=True %}
+                    {% for transaction in transactions  %}
+                        {% if forloop.last and transactions.has_next %} 
+                            <tr hx-get="{% url 'get-transactions' %}?page={{ transactions.next_page_number }}"
+                            hx-trigger="revealed"
+                            hx-swap="afterend"
+                            hx-include="#filterform"
+                            hx-indicator="#spinner">
+                        {% else %}
+                            <tr>
+                        {% endif %}
+                                <td class="px-5 py-3">{{ transaction.date }}</td>
+                                <td class="px-5 py-3">{{ transaction.category }}</td>
+                                <td class="px-5 py-3">{{ transaction.transaction_type }}</td>
+                                <td class="px-5 py-3">{{ transaction.amount }}</td>
+                                <td class="px-5 py-3"><a href="{% url 'transaction-detail' transaction.id %}" class="text-primary underline">view</a></td>
+                            </tr>
+                    {% endfor %}
+                {% endpartialdef %}
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <p class="text-1xl text-gray-500 text-center">No Transactions Found</p>
+
+    {% endif %}
+    <!--div for making little bit space at bottom of table-->
+    <div class="mb-6">
+        {% comment %} <span id="spinner" class="loading loading-spinner loading-lg htmx-indicator"></span> {% endcomment %}
+        <span id="spinner" class="loading loading-dots loading-lg htmx-indicator"></span>
+    </div>
+</div>
+
+<!--1/4 col for the form of filter-->
+<div class="col-span-3 px-1 ms-4">
+    <div class="flex flex-col justify-between ">
+        <h4 class="bg-slate-200 font-poppins p-2 mt-10 rounded-sm text-lg card-title">Filter</h4>
+        <form hx-get="{% url 'transaction-page' %}"
+            hx-target="#transaction-container"
+            hx-swap="innerHTML"
+            id="filterform">
+
+            <div class="form-control mb-2">
+                {{ filter.form.transaction_type | add_label_class:"label text-black text-sm" }}
+                {% render_field filter.form.transaction_type class="select bg-gray-100 text-gray-900 text-xs" %}
+            </div>
+            <div class="flex justify-between gap-2 mb-2 mt-1">
+                <div class="form-control mb-2">
+                    {{ filter.form.start_date | add_label_class:"label text-black text-sm" }}
+                    {% render_field filter.form.start_date class="input bg-gray-100 text-gray-900 text-xs" %}
+                </div>
+                <div class="form-control mb-2">
+                    {{ filter.form.end_date | add_label_class:"label text-black text-sm" }}
+                    {% render_field filter.form.end_date class="input bg-gray-100 text-gray-900 text-xs" %}
+                </div>
+            </div>
+
+            <div class="form-control mb-4">
+                {% render_field filter.form.category class="text-green-500 border-gray-300 rounded focus:ring-green-500 text-xs" %}
+            </div>
+
+            {% comment %} <input type="submit" value="Filter" class="btn btn-primary "> {% endcomment %}
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-800  text-white px-4 py-2 me-2 rounded">Filter</button>
+        </form>
+
+        <div class="card bg-base-100 w-95 shadow-xl mt-4">
+            <h4 class="card-title text-lg items-center p-2 bg-slate-200 font-poppins">Final Results</h4>
+            <div class="card-body p-2">
+                <ul>
+                    <li class="px-1 py-1 font-[500]">Total Balance</li>
+                    <li class="px-1 py-1 font-[500]">Total Income: <span class="ms-3 text-sm">{{ total_income|floatformat:2|intcomma }}</span></li>
+                    <li class="px-1 py-1 font-[500]">Total Expense: <span class="ms-3 text-sm">{{ total_expense|floatformat:2|intcomma }}</span></li>
+                    <li class="px-1 py-1 font-[500]">Net Income: <span class="ms-3 text-sm">{{ net_income|floatformat:2|intcomma }}</span> </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
